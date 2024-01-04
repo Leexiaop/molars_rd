@@ -15,6 +15,8 @@ func InitRouter() * gin.Engine {
 
 	{
 		route.GET("/product", api.GetProducts)
+		route.POST("/product", api.AddProducts)
+		route.GET("/record", api.GetRecords)
 	}
 	return r
 }

@@ -24,6 +24,9 @@ func init () {
 	if err != nil {
 		log.Fatalf("Fail to parse 'conf/app.ini': %v", err)
 	}
+	LoadApp()
+	LoadBase()
+	LoadServer()
 }
 
 func LoadBase () {

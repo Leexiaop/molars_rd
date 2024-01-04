@@ -3,23 +3,32 @@ package models
 type Product struct {
 	Model
 
-	ID int `json:"id"`
-	Name string `json:"name"`
-	Price int `json:"price"`
-	CreatedBy string `json:"created_by"`
-	CreatedOn string `json:"created_on"`
-	ModifieldBy string `json:"modifield_by"`
-	ModifieldOn string `json:"modifield_on"`
-	Url string `json:"url"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
+	Url   string `json:"url"`
 }
 
-
-func GetProducts (pageNum int, pageSize int, maps interface{}) (products []Product) {
+func GetProducts(pageNum int, pageSize int, maps interface{}) (products []Product) {
 	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&products)
 	return
 }
 
-func GetProductsTotal (maps interface{}) (count int) {
+func GetProductsTotal(maps interface{}) (count int) {
 	db.Model(&Product{}).Where(maps).Count(&count)
 	return
+}
+
+func ExistProductName(name string) bool {
+	var product Product
+	db.Select("id").Where("name = ?", name).First(&product)
+	return product.ID > 0
+}
+
+func AddProducts(name string, price int, url string) bool {
+	db.Create(&Product{
+		Name:  name,
+		Price: price,
+		Url:   url,
+	})
+	return true
 }
