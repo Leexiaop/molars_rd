@@ -81,7 +81,7 @@ func EditProducts (ctx * gin.Context) {
 	name := m.Name
 	price := m.Price
 	url := m.Url
-	modifiedBy := ctx.DefaultQuery("modifiedBy", "13691388204")
+	modifieldBy := ctx.DefaultQuery("modifieldBy", "13691388204")
 
 	valid := validation.Validation{}
 	valid.Required(id, "id").Message("找不到对应的ID")
@@ -94,7 +94,7 @@ func EditProducts (ctx * gin.Context) {
 		code = e.SUCCESS
 		if (models.ExistProductId(id)) {
 			data := make(map[string]interface{})
-			data["modifield_by"] = modifiedBy
+			data["modifield_by"] = modifieldBy
 			if name != "" {
 				data["name"] = name
 			}

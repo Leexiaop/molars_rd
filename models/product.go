@@ -63,6 +63,6 @@ func (product *Product) BeforeCreate(scope *gorm.Scope) error {
 }
 
 func (product *Product) BeforeUpdate(scope *gorm.Scope) error {
-	scope.SetColumn("ModifiedOn", time.Now().Unix())
+	scope.SetColumn("ModifieldOn", time.Now().Unix())
 	return nil
 }
