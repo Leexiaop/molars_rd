@@ -12,10 +12,13 @@ func InitRouter() * gin.Engine {
 	r.Use(gin.Recovery())
 	gin.SetMode(setting.RunMode)
 	route := r.Group("/api")
-
 	{
-		route.GET("/product", api.GetProducts)
 		route.POST("/product", api.AddProducts)
+		route.DELETE("/product/:id", api.DeleteProducts)
+		route.PUT("/product", api.EditProducts)
+		route.GET("/product", api.GetProducts)
+	}
+	{
 		route.GET("/record", api.GetRecords)
 	}
 	return r
