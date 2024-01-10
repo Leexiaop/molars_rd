@@ -18,3 +18,7 @@ func GetRecordsTotal(maps interface{}) (count int) {
 	db.Model(&Record{}).Where(maps).Count(&count)
 	return
 }
+
+func AddRecords () {}
+
+func ExistRecordName () {}

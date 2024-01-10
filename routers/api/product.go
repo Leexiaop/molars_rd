@@ -14,7 +14,7 @@ import (
 	"github.com/astaxie/beego/validation"
 )
 
-type BodyStruct struct {
+type ProductStruct struct {
 	ID int `json:"id"`
 	Name string `json:"name"`
 	Price int `json:"price"`
@@ -42,7 +42,7 @@ func GetProducts (ctx * gin.Context) {
 func AddProducts (ctx * gin.Context) {
 	jsonData, _ := ctx.GetRawData()
 
-	var m BodyStruct
+	var m ProductStruct
 
 	json.Unmarshal(jsonData, &m)
 	name := m.Name
@@ -75,7 +75,7 @@ func AddProducts (ctx * gin.Context) {
 func EditProducts (ctx * gin.Context) {
 	jsonData, _ := ctx.GetRawData()
 
-	var m BodyStruct
+	var m ProductStruct
 	json.Unmarshal(jsonData, &m)
 	id := m.ID
 	name := m.Name

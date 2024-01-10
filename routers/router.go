@@ -13,13 +13,15 @@ func InitRouter() * gin.Engine {
 	gin.SetMode(setting.RunMode)
 	route := r.Group("/api")
 	{
+		//	商品的增删改查
 		route.POST("/product", api.AddProducts)
 		route.DELETE("/product/:id", api.DeleteProducts)
 		route.PUT("/product", api.EditProducts)
 		route.GET("/product", api.GetProducts)
-	}
-	{
+
+		//	记录的增删改查
 		route.GET("/record", api.GetRecords)
+		route.POST("record", api.AddRecords)
 	}
 	return r
 }

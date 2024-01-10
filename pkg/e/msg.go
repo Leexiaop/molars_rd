@@ -5,6 +5,7 @@ var MsgFlags = map[int]string {
 	ERROR : "fail",
 	INVALID_PARAMS : "请求参数错误",
 	ERROR_EXIST_PRODUCT : "产品名在该标签名称",
+	ERROR_EXIST_RECORD: "该条记录已存在",
 	ERROR_NOT_EXIST_PRODUCT : "该产品不存在",
 	ERROR_NOT_EXIST_ARTICLE : "该文章不存在",
 	ERROR_AUTH_CHECK_TOKEN_FAIL : "Token鉴权失败",
