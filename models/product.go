@@ -11,8 +11,6 @@ type Product struct {
 	Name  string `json:"name"`
 	Price int    `json:"price"`
 	Url   string `json:"url"`
-	CreatedBy   string `json:"created_by"`
-	ModifieldBy string `json:"modifield_by"`
 }
 
 func GetProducts(pageNum int, pageSize int, maps interface{}) (products []Product) {
@@ -37,12 +35,11 @@ func ExistProductId (id int) bool {
 	return product.ID > 0
 }
 
-func AddProducts(name string, price int, url string, createdBy string) bool {
+func AddProducts(name string, price int, url string) bool {
 	db.Create(&Product{
 		Name:  name,
 		Price: price,
 		Url:   url,
-		CreatedBy: createdBy,
 	})
 	return true
 }
@@ -59,10 +56,12 @@ func DeleteProducts (id int) bool {
 
 func (product *Product) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
+	scope.SetColumn("CreatedBy", "13691388204")
 	return nil
 }
 
 func (product *Product) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifieldOn", time.Now().Unix())
+	scope.SetColumn("ModifieldBy", "13691388204")
 	return nil
 }

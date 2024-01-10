@@ -13,14 +13,6 @@ import (
 	"github.com/astaxie/beego/validation"
 )
 
-type RecordStruct struct {
-	ID int `json:"id"`
-	Price int `json:"price"`
-	ProductID int `json:"product_id"`
-	Count int 	`json:"count"`
-	Url string 	`json:"url"`
-}
-
 //	获取记录列表
 func GetRecords (ctx * gin.Context) {
 	productId := ctx.Query("product_id")
@@ -54,7 +46,7 @@ func AddRecords (ctx * gin.Context) {
 	count := m.Count
 	url := m.Url
 	productId := m.ProductId
-
+	
 	valid := validation.Validation{}
 	valid.Required(price, "price").Message("单价不能为空!")
 	valid.Required(count, "count").Message("数量不能为空")
@@ -63,12 +55,8 @@ func AddRecords (ctx * gin.Context) {
 	code := e.INVALID_PARAMS
 
 	if !valid.HasErrors() {
-		if !models.ExistRecordName(name) {
-			code = e.SUCCESS
-			models.AddRecords(price, count, productId, url)
-		} else {
-			code = e.ERROR_EXIST_RECORD
-		}
+		code = e.SUCCESS
+		models.AddRecords(price, count, productId, url)
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": code,

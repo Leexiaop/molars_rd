@@ -1,5 +1,10 @@
 package models
 
+import (
+	"time"
+	"github.com/jinzhu/gorm"
+)
+
 type Record struct {
 	Model
 
@@ -19,6 +24,18 @@ func GetRecordsTotal(maps interface{}) (count int) {
 	return
 }
 
-func AddRecords () {}
+func AddRecords (price int, count int, productId int, url string) bool {
+	db.Create(&Record{
+		Price: price,
+		Count: count,
+		ProductId: productId,
+		Url: url,
+	})
+	return true
+}
 
-func ExistRecordName () {}
+func (product *Record) BeforeCreate(scope *gorm.Scope) error {
+	scope.SetColumn("CreatedOn", time.Now().Unix())
+	scope.SetColumn("CreatedBy", "13691388204")
+	return nil
+}

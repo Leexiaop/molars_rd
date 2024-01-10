@@ -14,13 +14,6 @@ import (
 	"github.com/astaxie/beego/validation"
 )
 
-type ProductStruct struct {
-	ID int `json:"id"`
-	Name string `json:"name"`
-	Price int `json:"price"`
-	Url string `json:"url"`
-}
-
 //	获取产品列表
 
 func GetProducts (ctx * gin.Context) {
@@ -42,14 +35,12 @@ func GetProducts (ctx * gin.Context) {
 func AddProducts (ctx * gin.Context) {
 	jsonData, _ := ctx.GetRawData()
 
-	var m ProductStruct
+	var m models.Product
 
 	json.Unmarshal(jsonData, &m)
 	name := m.Name
 	price := m.Price
 	url := m.Url
-
-	createdBy := ctx.DefaultQuery("createdBy", "13691388204")
 
 	valid := validation.Validation{}
 	valid.Required(name, "name").Message("产品名称不能为空")
@@ -60,7 +51,7 @@ func AddProducts (ctx * gin.Context) {
 	if !valid.HasErrors() {
 		if !models.ExistProductName(name) {
 			code = e.SUCCESS
-			models.AddProducts(name, price, url, createdBy)
+			models.AddProducts(name, price, url)
 		} else {
 			code = e.ERROR_EXIST_PRODUCT
 		}
@@ -75,13 +66,12 @@ func AddProducts (ctx * gin.Context) {
 func EditProducts (ctx * gin.Context) {
 	jsonData, _ := ctx.GetRawData()
 
-	var m ProductStruct
+	var m models.Product
 	json.Unmarshal(jsonData, &m)
 	id := m.ID
 	name := m.Name
 	price := m.Price
 	url := m.Url
-	modifieldBy := ctx.DefaultQuery("modifieldBy", "13691388204")
 
 	valid := validation.Validation{}
 	valid.Required(id, "id").Message("找不到对应的ID")
@@ -94,7 +84,6 @@ func EditProducts (ctx * gin.Context) {
 		code = e.SUCCESS
 		if (models.ExistProductId(id)) {
 			data := make(map[string]interface{})
-			data["modifield_by"] = modifieldBy
 			if name != "" {
 				data["name"] = name
 			}
