@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -33,6 +34,10 @@ func ExistProductId (id int) bool {
 	var product Product
 	db.Select("id").Where("id = ?", id).First(&product)
 	return product.ID > 0
+}
+func ExitRecords(productId int) (count int) {
+	db.Model(&Record{}).Where("product_id = ?", productId).Count(&count)
+	return
 }
 
 func AddProducts(name string, price int, url string) bool {

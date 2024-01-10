@@ -117,7 +117,11 @@ func DeleteProducts (ctx * gin.Context) {
 	if !valid.HasErrors() {
 		code = e.SUCCESS
 		if models.ExistProductId(id) {
-			models.DeleteProducts(id)
+			if models.ExitRecords(id) <= 0 {
+				models.DeleteProducts(id)
+			} else {
+				code = e.ERROR_EXIST_RECORD_List
+			}
 		} else {
 			code = e.ERROR_NOT_EXIST_PRODUCT
 		}

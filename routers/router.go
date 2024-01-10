@@ -21,7 +21,9 @@ func InitRouter() * gin.Engine {
 
 		//	记录的增删改查
 		route.GET("/record", api.GetRecords)
-		route.POST("record", api.AddRecords)
+		route.POST("/record", api.AddRecords)
+		route.PUT("/record", api.EditRecords)
+		route.DELETE("/record/:id", api.DeleteRecords)
 	}
 	return r
 }
