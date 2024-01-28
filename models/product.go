@@ -14,49 +14,83 @@ type Product struct {
 	Url   string `json:"url"`
 }
 
-func GetProducts(pageNum int, pageSize int, maps interface{}) (products []Product) {
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&products)
-	return
+func GetProducts(pageNum int, pageSize int, maps interface{}) ([]Product, error) {
+	var (
+		products []Product
+		err error
+	)
+
+	if pageSize > 0 && pageNum > 0 {
+		err = db.Where(maps).Find(&products).Offset(pageNum).Limit(pageSize).Error
+	} else {
+		err = db.Where(maps).Find(&products).Error
+	}
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return products, nil
 }
 
-func GetProductsTotal(maps interface{}) (count int) {
-	db.Model(&Product{}).Where(maps).Count(&count)
-	return
+func GetProductsTotal(maps interface{}) (int, error) {
+	var count int
+	if err := db.Model(&Product{}).Where(maps).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
-func ExistProductName(name string) bool {
+func ExistProductName(name string) (bool, error) {
 	var product Product
-	db.Select("id").Where("name = ?", name).First(&product)
-	return product.ID > 0
+	err := db.Select("id").Where("name = ?", name).First(&product).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if product.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
-func ExistProductId (id int) bool {
+func ExistProductId (id int) (bool, error) {
 	var product Product
-	db.Select("id").Where("id = ?", id).First(&product)
-	return product.ID > 0
+	err := db.Select("id").Where("id = ?", id).First(&product).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if product.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 func ExitRecords(productId int) (count int) {
 	db.Model(&Record{}).Where("product_id = ?", productId).Count(&count)
 	return
 }
 
-func AddProducts(name string, price int, url string) bool {
-	db.Create(&Product{
+func AddProducts(name string, price int, url string) error {
+	product := Product{
 		Name:  name,
 		Price: price,
 		Url:   url,
-	})
-	return true
+	}
+	if err := db.Create(&product).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func EditProducts (id int, data interface{}) bool {
-	db.Model(&Product{}).Where("id = ?", id).Updates(data)
-	return true
+func EditProducts (id int, data interface{}) error {
+	if err := db.Model(&Product{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func DeleteProducts (id int) bool {
-	db.Where("id = ?", id).Delete(&Product{})
-	return true
+func DeleteProduct (id int) error {
+	if err := db.Where("id = ?", id).Delete(&Product{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (product *Product) BeforeCreate(scope *gorm.Scope) error {

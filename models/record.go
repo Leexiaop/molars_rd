@@ -15,40 +15,68 @@ type Record struct {
 	Url       string `json:"url"`
 }
 
-func GetRecords(pageNum int, pageSize int, maps interface{}) (records []Record) {
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&records)
-	return
+func GetRecords(pageNum int, pageSize int, maps interface{}) ([]Record, error) {
+	var (
+		records []Record
+		err error
+	)
+
+	if pageSize > 0 && pageNum > 0 {
+		err = db.Where(maps).Find(&records).Offset(pageNum).Limit(pageSize).Error
+	} else {
+		err = db.Where(maps).Find(&records).Error
+	}
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return records, nil
 }
 
-func GetRecordsTotal(maps interface{}) (count int) {
-	db.Model(&Record{}).Where(maps).Count(&count)
-	return
+func GetRecordsTotal(maps interface{}) (int, error) {
+	var count int
+	if err := db.Model(&Record{}).Where(maps).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
-func AddRecords (price int, count int, productId int, url string) bool {
-	db.Create(&Record{
+func AddRecords (price int, count int, productId int, url string) error {
+	record := Record{
 		Price: price,
 		Count: count,
 		ProductId: productId,
 		Url: url,
-	})
-	return true
+	}
+	if err := db.Create(&record).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func ExistRecordId (id int) bool {
+func ExistRecordId (id int) (bool, error) {
 	var record Record
-	db.Select("id").Where("id = ?", id).First(&record)
-	return record.ID > 0
+	err := db.Select("id").Where("id = ?", id).First(&record).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if record.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
-func EditRecords (id int, data interface{}) bool {
-	db.Model(&Record{}).Where("id = ?", id).Updates(data)
-	return true
+func EditRecords (id int, data interface{}) error {
+	if err := db.Model(&Record{}).Where("id = ?", id).Updates(data).Error;err != nil {
+		return err
+	}
+	return nil
 }
 
-func DeleteRecords (id int) bool {
-	db.Where("id = ?", id).Delete(&Record{})
-	return true
+func DeleteRecord (id int) error {
+	if err := db.Where("id = ?", id).Delete(&Record{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (product *Record) BeforeCreate(scope *gorm.Scope) error {

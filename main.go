@@ -3,26 +3,43 @@ package main
 import (
 	"fmt"
 	"log"
-	"syscall"
+	"net/http"
 
-	"github.com/fvbock/endless"
+	"github.com/gin-gonic/gin"
 
+	"github.com/Leexiaop/molars_rd/models"
+	"github.com/Leexiaop/molars_rd/pkg/gredis"
+	"github.com/Leexiaop/molars_rd/pkg/logging"
 	"github.com/Leexiaop/molars_rd/pkg/setting"
+	"github.com/Leexiaop/molars_rd/pkg/util"
 	"github.com/Leexiaop/molars_rd/routers"
 )
+func init () {
+	setting.Setup()
+	models.Setup()
+	logging.Setup()
+	gredis.Setup()
+	util.Setup()
+}
+
 func main () {
-	endless.DefaultReadTimeOut = setting.ReadTimeout
-	endless.DefaultWriteTimeOut = setting.WriteTimeout
-	endless.DefaultMaxHeaderBytes = 1 << 20
-	endPoint := fmt.Sprintf(":%d", setting.HTTPPort)
-	server := endless.NewServer(endPoint, routers.InitRouter())
+	gin.SetMode(setting.ServerSetting.RunMode)
 
-	server.BeforeBegin = func (add string)  {
-		log.Printf("Actual pid is %d", syscall.Getpid())
+	routersInit := routers.InitRouter()
+	readTimeout := setting.ServerSetting.ReadTimeout
+	writeTimeout := setting.ServerSetting.WriteTimeout
+	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
+
+	maxHeaderBytes := 1 << 20
+
+	server := &http.Server{
+		Addr:           endPoint,
+		Handler:        routersInit,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
 	}
+	log.Printf("[info] start http server listening %s", endPoint)
 
-	err := server.ListenAndServe()
-    if err != nil {
-        log.Printf("Server err: %v", err)
-    }
+	server.ListenAndServe()
 }
