@@ -15,6 +15,7 @@ type User struct {
 	Avatar   string
 	Auth     string
 	Phone    string
+	Password string
 	PageNum    int
 	PageSize   int
 }
@@ -50,7 +51,47 @@ func (u *User) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (r *User) getMaps() map[string]interface{}  {
+func (u * User) ExistById () (bool, error) {
+	return models.ExistUserId(u.ID)
+}
+
+func (u *User) getMaps() map[string]interface{}  {
 	maps := make(map[string]interface{})
+	if u.Username != "" {
+		maps["username"] = u.Username
+	}
+	if u.Password != "" {
+		maps["password"] = u.Password
+	}
+	if u.Avatar != "" {
+		maps["avatar"] = u.Avatar
+	}
+	if u.Phone != "" {
+		maps["phone"] = u.Phone
+	}
+	if u.Auth != "" {
+		maps["auth"] = u.Auth
+	}
 	return maps
+}
+
+func (u *User) Edit() (*models.User, error) {
+	data := make(map[string]interface{})
+	if u.Username != "" {
+		data["username"] = u.Username
+	}
+	if u.Password != "" {
+		data["password"] = u.Password
+	}
+	if u.Avatar != "" {
+		data["avatar"] = u.Avatar
+	}
+	if u.Phone != "" {
+		data["phone"] = u.Phone
+	}
+	if u.Auth != "" {
+		data["auth"] = u.Auth
+	}
+
+	return models.EditUser(u.ID, data)
 }

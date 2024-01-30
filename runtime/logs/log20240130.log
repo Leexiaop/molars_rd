@@ -1,0 +1,4 @@
+[INFO][request.go:10]2024/01/30 10:58:14 username 用户名不能为空!
+[INFO][request.go:10]2024/01/30 10:58:14 password 密码不能为空
+[INFO][request.go:10]2024/01/30 10:58:14 avatar 头像不能为空
+[INFO][request.go:10]2024/01/30 10:58:14 phone 头像不能为空

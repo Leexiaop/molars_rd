@@ -35,6 +35,9 @@ var MsgFlags = map[int]string{
 	ERROR_AUTH:                     "Token错误",
 	ERROR_GET_USER_FAIL:            "获取用户信息失败",
 	ERROR_COUNT_USER_LIST_FAIL:     "获取用户列表失败",
+	ERROR_EXIST_USER_FAIL:          "用户已存在",
+	ERROR_NOT_EXIST_USER:           "不存在该用户",
+	ERROR_ADD_USER_FAIL:            "添加用户失败",
 
 	//	上传图片
 	ERROR_UPLOAD_CHECK_IMAGE_FAIL: "上传图片失败",

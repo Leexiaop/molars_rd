@@ -169,40 +169,6 @@ func EditRecords (ctx * gin.Context) {
 		return
 	}
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
-
-
-	// valid := validation.Validation{}
-	// valid.Required(price, "price").Message("单价不能为空!")
-	// valid.Required(count, "count").Message("数量不能为空")
-	// valid.Required(productId, "productId").Message("产品ID不能为空")
-	
-	// code := e.INVALID_PARAMS
-	// if !valid.HasErrors() {
-	// 	code = e.SUCCESS
-	// 	if (models.ExistProductId(id)) {
-	// 		data := make(map[string]interface{})
-	// 		if count != 0 {
-	// 			data["count"] = count
-	// 		}
-	// 		if price != 0 {
-	// 			data["price"] = price
-	// 		}
-	// 		if url != "" {
-	// 			data["url"] = url
-	// 		}
-	// 		if productId != 0 {
-	// 			data["productId"] = productId
-	// 		}
-	// 		models.EditRecords(id, data)
-	// 	} else {
-	// 		code = e.ERROR_NOT_EXIST_PRODUCT
-	// 	}
-	// }
-	// ctx.JSON(http.StatusOK, gin.H{
-	// 	"code": code,
-	// 	"msg": e.GetMsg(code),
-	// 	"data": make(map[string]string),
-	// })
 }
 func DeleteRecords (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}

@@ -9,7 +9,7 @@ type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Avatar string `json:"avatar"`
-	Auth int `json:"auth"`
+	Auth string `json:"auth"`
 	Phone string `json:"phone"`
 }
 func GetUserTotal(maps interface{}) (int, error) {
@@ -35,5 +35,36 @@ func GetAllUser(pageNum int, pageSize int, maps interface{}) ([]User, error) {
 		return nil, err
 	}
 	return users, nil
+}
 
+func ExistUserId (id int) (bool, error) {
+	var user User
+	err := db.Select("id").Where("id = ?", id).First(&user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if user.ID > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+func EditUser (id int, data interface{}) (*User, error) {
+	var (
+		user User
+		err error
+	)
+
+	err = db.Model(&user).Where("id = ?", id).Updates(data).Error
+
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	err = db.Select([]string{"id", "username", "phone", "avatar", "auth"}).Find(&user).Error
+
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	
+	return &user, nil
 }

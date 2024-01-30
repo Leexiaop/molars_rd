@@ -26,3 +26,15 @@ func GetAuth (username, password string)(*User, error) {
 	}
 	return &user, nil
 }
+
+func AddUser (username, password, auth string) error {
+	user := User{
+		Username: username,
+		Password: password,
+		Auth: auth,
+	}
+	if err := db.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}

@@ -41,6 +41,7 @@ func InitRouter() * gin.Engine {
 
 		//	用户增删改查
 		basicApi.GET("/user", basic.GetUsers)
+		basicApi.PUT("/user", basic.EditUsers)
 	}
 	return r
 }

@@ -42,10 +42,44 @@ func GetAuth(c *gin.Context) {
 	}
 
 	if !isExist {
-		appG.Response(http.StatusUnauthorized, e.ERROR_AUTH, nil)
+		// appG.Response(http.StatusUnauthorized, e.ERROR_AUTH, nil)
+		AddUser(c, username, password)
+		return
+	}
+	CreateToken(c, username, password)
+}
+
+func AddUser(ctx *gin.Context, username, password string) {
+	appG := app.Gin{C: ctx}
+	auth := "0"
+
+	valid := validation.Validation{}
+	valid.Required(username, "username").Message("用户名不能为空!")
+	valid.Required(password, "password").Message("密码不能为空")
+
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
 		return
 	}
 
+	authService := auth_service.User{Username: username, Password: password, Auth: auth}
+	
+
+	err := authService.Add()
+
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_USER_FAIL, nil)
+		return
+	}
+
+	// appG.Response(http.StatusOK, e.SUCCESS, nil)
+	CreateToken(ctx, username, password)
+	
+}
+
+func CreateToken(c *gin.Context, username, password string) {
+	appG := app.Gin{C: c}
 	token, err := util.GenerateToken(username, password)
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_AUTH_TOKEN, nil)
