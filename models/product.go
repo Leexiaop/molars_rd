@@ -12,6 +12,8 @@ type Product struct {
 	Name  string `json:"name"`
 	Price int    `json:"price"`
 	Url   string `json:"url"`
+	ModifieldBy string `json:"modifield_by"`
+	CreatedBy string `json:"created_by"`
 }
 
 func GetProducts(pageNum int, pageSize int, maps interface{}) ([]Product, error) {
@@ -21,7 +23,7 @@ func GetProducts(pageNum int, pageSize int, maps interface{}) ([]Product, error)
 	)
 
 	if pageSize > 0 && pageNum > 0 {
-		err = db.Where(maps).Find(&products).Offset(pageNum).Limit(pageSize).Error
+		err = db.Offset(pageNum).Limit(pageSize).Where(maps).Find(&products).Error
 	} else {
 		err = db.Where(maps).Find(&products).Error
 	}
@@ -67,11 +69,12 @@ func ExitRecords(productId int) (count int) {
 	return
 }
 
-func AddProducts(name string, price int, url string) error {
+func AddProducts(name string, price int, url string, created_by string) error {
 	product := Product{
 		Name:  name,
 		Price: price,
 		Url:   url,
+		CreatedBy: created_by,
 	}
 	if err := db.Create(&product).Error; err != nil {
 		return err
@@ -95,12 +98,10 @@ func DeleteProduct (id int) error {
 
 func (product *Product) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
-	scope.SetColumn("CreatedBy", "13691388204")
 	return nil
 }
 
 func (product *Product) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifieldOn", time.Now().Unix())
-	scope.SetColumn("ModifieldBy", "13691388204")
 	return nil
 }

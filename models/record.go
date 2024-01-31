@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -13,6 +14,8 @@ type Record struct {
 	ProductId int    `json:"product_id"`
 	Count     int    `json:"count"`
 	Url       string `json:"url"`
+	CreatedBy string `json:"created_by"`
+	ModifieldBy string `json:"modifield_by"`
 }
 
 func GetRecords(pageNum int, pageSize int, maps interface{}) ([]Record, error) {
@@ -22,7 +25,7 @@ func GetRecords(pageNum int, pageSize int, maps interface{}) ([]Record, error) {
 	)
 
 	if pageSize > 0 && pageNum > 0 {
-		err = db.Where(maps).Find(&records).Offset(pageNum).Limit(pageSize).Error
+		err = db.Offset(pageNum).Limit(pageSize).Find(&records).Where(maps).Error
 	} else {
 		err = db.Where(maps).Find(&records).Error
 	}
@@ -40,12 +43,14 @@ func GetRecordsTotal(maps interface{}) (int, error) {
 	return count, nil
 }
 
-func AddRecords (price int, count int, productId int, url string) error {
+func AddRecords (price int, count int, productId int, url string, created_by string) error {
+	fmt.Print(created_by, 44444)
 	record := Record{
 		Price: price,
 		Count: count,
 		ProductId: productId,
 		Url: url,
+		CreatedBy: created_by,
 	}
 	if err := db.Create(&record).Error; err != nil {
 		return err
@@ -81,12 +86,10 @@ func DeleteRecord (id int) error {
 
 func (product *Record) BeforeCreate(scope *gorm.Scope) error {
 	scope.SetColumn("CreatedOn", time.Now().Unix())
-	scope.SetColumn("CreatedBy", "13691388204")
 	return nil
 }
 
 func (product *Record) BeforeUpdate(scope *gorm.Scope) error {
 	scope.SetColumn("ModifieldOn", time.Now().Unix())
-	scope.SetColumn("ModifieldBy", "13691388204")
 	return nil
 }

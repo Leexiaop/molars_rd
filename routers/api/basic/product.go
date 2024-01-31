@@ -9,6 +9,8 @@ import (
 	"github.com/Leexiaop/molars_rd/models"
 	"github.com/Leexiaop/molars_rd/pkg/app"
 	"github.com/Leexiaop/molars_rd/pkg/e"
+	"github.com/Leexiaop/molars_rd/pkg/setting"
+	"github.com/Leexiaop/molars_rd/pkg/util"
 	"github.com/Leexiaop/molars_rd/service/product_service"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
@@ -19,8 +21,8 @@ import (
 func GetProducts (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}
 
-	pageSize, _ := strconv.Atoi(ctx.Query("pageSize"))
-	pageNum, _ := strconv.Atoi(ctx.Query("pageNum"))
+	pageSize, _ :=strconv.Atoi(ctx.DefaultQuery("pageSize", fmt.Sprint(setting.AppSetting.PageSize)))
+	pageNum, _ := strconv.Atoi(ctx.DefaultQuery("pageNum", fmt.Sprint(util.GetPage(ctx))))
 
 	productService := product_service.Product{
 		PageNum: pageNum,
@@ -44,12 +46,15 @@ func GetProducts (ctx * gin.Context) {
 
 	appG.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
 		"list": products,
+		"pageSize": pageSize,
+		"pageNum": pageNum,
 		"total": count,
 	})
 }
 
 func AddProducts (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}
+	username, _ := ctx.Get("username")
 	jsonData, _ := ctx.GetRawData()
 
 	var m models.Product
@@ -58,6 +63,7 @@ func AddProducts (ctx * gin.Context) {
 	name := m.Name
 	price := m.Price
 	url := m.Url
+	created_by := username.(string)
 
 	valid := validation.Validation{}
 	valid.Required(name, "name").Message("产品名称不能为空")
@@ -74,6 +80,7 @@ func AddProducts (ctx * gin.Context) {
 		Name: name,
 		Price: price,
 		Url: url,
+		CreatedBy: created_by,
 	}
 	exists, err := productService.ExistByName()
 	if err != nil {
@@ -97,6 +104,8 @@ func AddProducts (ctx * gin.Context) {
 
 func EditProducts (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}
+	username, _ := ctx.Get("username")
+
 	jsonData, _ := ctx.GetRawData()
 
 	var m models.Product
@@ -105,6 +114,7 @@ func EditProducts (ctx * gin.Context) {
 	name := m.Name
 	price := m.Price
 	url := m.Url
+	modifieldBy := username.(string)
 
 	valid := validation.Validation{}
 	valid.Required(id, "id").Message("找不到对应的ID")
@@ -123,10 +133,10 @@ func EditProducts (ctx * gin.Context) {
 		Name: name,
 		Price: price,
 		Url: url,
+		ModifieldBy: modifieldBy,
 	}
 	exists, err := productService.ExistById()
 
-	fmt.Print(exists, err, "exists")
 	 if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_PRODUCT_FAIL, nil)
 		return

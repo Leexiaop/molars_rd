@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Leexiaop/molars_rd/models"
 	"github.com/Leexiaop/molars_rd/pkg/app"
@@ -18,9 +19,12 @@ import (
 func GetUsers(ctx *gin.Context) {
 	appG := app.Gin{C: ctx}
 
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("pageSize", fmt.Sprint(setting.AppSetting.PageSize)))
+	pageNum, _ := strconv.Atoi(ctx.DefaultQuery("pageNum", fmt.Sprint(util.GetPage(ctx))))
+
 	userServeice := user_service.User{
-		PageNum: util.GetPage(ctx),
-		PageSize: setting.AppSetting.PageSize,
+		PageNum: pageNum,
+		PageSize: pageSize,
 	}
 
 	total, err := userServeice.Counts()
@@ -43,6 +47,7 @@ func GetUsers(ctx *gin.Context) {
 
 func EditUsers(ctx *gin.Context) {
 	appG := app.Gin{C: ctx}
+	nickName, _ := ctx.Get("username")
 	jsonData, _ := ctx.GetRawData()
 
 	var m models.User
@@ -53,8 +58,7 @@ func EditUsers(ctx *gin.Context) {
 	avatar := m.Avatar
 	phone := m.Phone
 	auth := m.Auth
-
-	fmt.Print("auth===", auth)
+	modifield_by := nickName.(string)
 
 	valid := validation.Validation{}
 	valid.Required(id, "id").Message("ID不能为空!")
@@ -84,6 +88,9 @@ func EditUsers(ctx *gin.Context) {
 	}
 	if phone != "" {
 		userService.Phone = phone
+	}
+	if modifield_by != "" {
+		userService.ModifieldBy = modifield_by
 	}
 
 	exists, err := userService.ExistById()

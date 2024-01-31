@@ -16,8 +16,6 @@ type Model struct {
 	ID int `gorm:"primary_key" json:"id"`
 	CreatedOn int `json:"created_on"`
 	ModifieldOn int `json:"modifield_on"`
-	CreatedBy   string `json:"created_by"`
-	ModifieldBy string `json:"modifield_by"`
 }
 
 func Setup () {

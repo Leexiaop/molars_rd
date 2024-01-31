@@ -21,7 +21,7 @@ type Record struct {
 	Count      int
 	CreatedBy  string
 	Url        string
-	ModifiedBy string
+	ModifieldBy string
 	PageNum    int
 	PageSize   int
 	Name string
@@ -74,7 +74,7 @@ func (r *Record) Delete() error {
 	return models.DeleteRecord(r.ID)
 }
 func (r *Record) Add() error {
-	return models.AddRecords(r.Price, r.Count, r.ProductId, r.Url)
+	return models.AddRecords(r.Price, r.Count, r.ProductId, r.Url, r.CreatedBy)
 }
 func (r *Record) Edit() error {
 	return models.EditRecords(r.ID, map[string]interface{}{
@@ -113,9 +113,9 @@ func (r *Record) Export() (string, error) {
 			strconv.Itoa(v.Count),
 			strconv.Itoa(v.ProductId),
 			v.CreatedBy,
-			v.ModifieldBy,
 			strconv.Itoa(v.CreatedOn),
 			strconv.Itoa(v.ModifieldOn),
+			v.ModifieldBy,
 		}
 		row = sheet.AddRow()
 		for _, value := range values {

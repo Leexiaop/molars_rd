@@ -2,6 +2,7 @@ package basic
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,18 +24,20 @@ import (
 func GetRecords (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}
 	productId, _ := strconv.Atoi(ctx.Query("product_id"))
+	pageSize, _ :=strconv.Atoi(ctx.DefaultQuery("pageSize", fmt.Sprint(setting.AppSetting.PageSize)))
+	pageNum, _ := strconv.Atoi(ctx.DefaultQuery("pageNum", fmt.Sprint(util.GetPage(ctx))))
 
-	valid := validation.Validation{}
+	// valid := validation.Validation{}
 
-	if (valid.HasErrors()) {
-		app.MarkErrors(valid.Errors)
-		appG.Response(http.StatusBadRequest, e.INVALID_PRODUCT_PARAMS, nil)
-		return
-	}
+	// if (valid.HasErrors()) {
+	// 	app.MarkErrors(valid.Errors)
+	// 	appG.Response(http.StatusBadRequest, e.INVALID_PRODUCT_PARAMS, nil)
+	// 	return
+	// }
 	recordServeice := record_service.Record{
 		ProductId: productId,
-		PageNum: util.GetPage(ctx),
-		PageSize: setting.AppSetting.PageSize,
+		PageNum: pageNum,
+		PageSize: pageSize,
 	}
 
 	total, err := recordServeice.Counts()
@@ -51,12 +54,15 @@ func GetRecords (ctx * gin.Context) {
 
 	appG.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
 		"list": records,
+		"pageSize":pageSize,
+		"pageNum": pageNum,
 		"total": total,
 	})
 }
 
 func AddRecords (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}
+	username, _ := ctx.Get("username")
 	jsonData, _ := ctx.GetRawData()
 
 	var m models.Record
@@ -66,6 +72,7 @@ func AddRecords (ctx * gin.Context) {
 	count := m.Count
 	url := m.Url
 	productId := m.ProductId
+	created_by := username.(string)
 
 	valid := validation.Validation{}
 	valid.Required(price, "price").Message("单价不能为空!")
@@ -98,6 +105,7 @@ func AddRecords (ctx * gin.Context) {
 		Price: price,
 		Count: count,
 		Url: url,
+		CreatedBy: created_by,
 	}
 
 	if err := recordService.Add();err != nil {
@@ -109,6 +117,7 @@ func AddRecords (ctx * gin.Context) {
 }
 func EditRecords (ctx * gin.Context) {
 	appG := app.Gin{C: ctx}
+	username, _ := ctx.Get("username")
 	jsonData, _ := ctx.GetRawData()
 
 	var m models.Record
@@ -118,6 +127,7 @@ func EditRecords (ctx * gin.Context) {
 	count := m.Count
 	url := m.Url
 	productId := m.ProductId
+	modifield_by := username.(string)
 
 	valid := validation.Validation{}
 	valid.Required(id, "id").Message("ID不能为空!")
@@ -137,6 +147,7 @@ func EditRecords (ctx * gin.Context) {
 		Count: count,
 		Url: url,
 		ProductId: productId,
+		ModifieldBy: modifield_by,
 	}
 
 	exists, err := recordService.ExistById()

@@ -10,7 +10,7 @@ import (
 )
 
 type User struct {
-	ID       int    
+	ID       int
 	Username string
 	Avatar   string
 	Auth     string
@@ -18,6 +18,7 @@ type User struct {
 	Password string
 	PageNum    int
 	PageSize   int
+	ModifieldBy string
 }
 
 func (u *User) Counts() (int, error) {
@@ -91,6 +92,9 @@ func (u *User) Edit() (*models.User, error) {
 	}
 	if u.Auth != "" {
 		data["auth"] = u.Auth
+	}
+	if (u.ModifieldBy != "") {
+		data["modifield_by"] = u.ModifieldBy
 	}
 
 	return models.EditUser(u.ID, data)

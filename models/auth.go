@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -20,7 +22,7 @@ func CheckAuth(username, password string) (bool, error) {
 
 func GetAuth (username, password string)(*User, error) {
 	var user User
-	err := db.Select([]string{"id", "username", "avatar", "auth", "phone"}).Where(User{Username: username, Password: password}).First(&user).Error
+	err := db.Where(User{Username: username, Password: password}).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -32,9 +34,20 @@ func AddUser (username, password, auth string) error {
 		Username: username,
 		Password: password,
 		Auth: auth,
+		CreatedBy: username,
 	}
 	if err := db.Create(&user).Error; err != nil {
 		return err
 	}
+	return nil
+}
+
+func (u *User) BeforeCreate(scope *gorm.Scope) error {
+	scope.SetColumn("CreatedOn", time.Now().Unix())
+	return nil
+}
+
+func (u *User) BeforeUpdate(scope *gorm.Scope) error {
+	scope.SetColumn("ModifieldOn", time.Now().Unix())
 	return nil
 }

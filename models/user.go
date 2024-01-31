@@ -1,16 +1,20 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/jinzhu/gorm"
 )
 
 type User struct {
-	ID       int    `gotm:"primary_key" json:"id"`
+	Model
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Avatar string `json:"avatar"`
 	Auth string `json:"auth"`
 	Phone string `json:"phone"`
+	CreatedBy string `json:"created_by"`
+	ModifieldBy string `json:"modifield_by"`
 }
 func GetUserTotal(maps interface{}) (int, error) {
 	var count int
@@ -27,9 +31,10 @@ func GetAllUser(pageNum int, pageSize int, maps interface{}) ([]User, error) {
 	)
 
 	if pageSize > 0 && pageNum > 0 {
-		err = db.Select([]string{"id", "username", "phone", "avatar", "auth"}).Where(maps).Find(&users).Offset(pageNum).Limit(pageSize).Error
+		err = db.Offset(pageNum).Limit(pageSize).Find(&users).Where(maps).Error
 	} else {
-		err = db.Select([]string{"id", "username", "phone", "avatar", "auth"}).Where(maps).Find(&users).Error
+		fmt.Print(22)
+		err = db.Where(maps).Find(&users).Error
 	}
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err

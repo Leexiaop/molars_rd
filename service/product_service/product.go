@@ -15,7 +15,7 @@ type Product struct {
 	Price      int
 	Url        string
 	CreatedBy  string
-	ModifiedBy string
+	ModifieldBy string
 
 	PageSize int
 	PageNum  int
@@ -50,7 +50,7 @@ func (p *Product) GetAll() ([]models.Product, error) {
 }
 
 func (p *Product) Add() error {
-	return models.AddProducts(p.Name, p.Price, p.Url)
+	return models.AddProducts(p.Name, p.Price, p.Url, p.CreatedBy)
 }
 func (p *Product) ExistByName() (bool, error) {
 	return models.ExistProductName(p.Name)
@@ -65,6 +65,9 @@ func(p *Product) Edit() error {
 	}
 	if p.Url != "" {
 		data["url"] = p.Url
+	}
+	if p.ModifieldBy != "" {
+		data["modifield_by"] = p.ModifieldBy
 	}
 	return models.EditProducts(p.ID, data)
 }
