@@ -19,7 +19,17 @@ func CheckAuth(username, password string) (bool, error) {
 	}
 	return false, nil
 }
-
+func CheckName (username string) (bool, error) {
+	var user User
+	err := db.Select("id").Where(User{Username: username}).First(&user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if user.ID > 0 {
+		return true, nil
+	}
+	return false, nil
+}
 func GetAuth (username, password string)(*User, error) {
 	var user User
 	err := db.Where(User{Username: username, Password: password}).First(&user).Error

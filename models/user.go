@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -31,10 +29,9 @@ func GetAllUser(pageNum int, pageSize int, maps interface{}) ([]User, error) {
 	)
 
 	if pageSize > 0 && pageNum > 0 {
-		err = db.Offset(pageNum).Limit(pageSize).Find(&users).Where(maps).Error
+		err = db.Offset(pageNum).Limit(pageSize).Select("id", "username", "phone", "avatar", "auth").Find(&users).Where(maps).Error
 	} else {
-		fmt.Print(22)
-		err = db.Where(maps).Find(&users).Error
+		err = db.Select([]string{"id", "username", "phone", "avatar", "auth"}).Where(maps).Find(&users).Error
 	}
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
