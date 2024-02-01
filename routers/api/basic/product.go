@@ -31,7 +31,6 @@ func GetProducts (ctx * gin.Context) {
 
 	products, err := productService.GetAll()
 
-
 	if err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_GET_PRODUCTS_FAIL, nil)
 		return
